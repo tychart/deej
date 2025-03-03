@@ -7,6 +7,8 @@ enum PotentiometerType {
 const int NUM_SLIDERS = 4;
 const int analogInputs[NUM_SLIDERS] = {A0, A1, A2, A3};
 const PotentiometerType POTENTIOMETER_TYPE = LOGARITHMIC; //LINEAR OR LOGARITHMIC
+const int sliderJiggleIndex = 1; // Slider A1 being used to adjust firefox
+int sliderJiggleAmount = 10; // Ammount that the slider will be jiggled every loop
 
 int analogSliderValues[NUM_SLIDERS];
 
@@ -27,12 +29,21 @@ void loop() {
 
 void updateSliderValues() {
   for (int i = 0; i < NUM_SLIDERS; i++) {
-    if(POTENTIOMETER_TYPE == 1) {
-     analogSliderValues[i] = logarithmicToLinearValue(analogRead(analogInputs[i]));
+    if(POTENTIOMETER_TYPE == LOGARITHMIC) {
+      if(i == sliderJiggleIndex) {
+        analogSliderValues[i] = applySafeJiggle(logarithmicToLinearValue(analogRead(analogInputs[i])));
+      } else {
+        analogSliderValues[i] = logarithmicToLinearValue(analogRead(analogInputs[i]));
+      }
     } else {
-      analogSliderValues[i] = analogRead(analogInputs[i]);
+      if(i == sliderJiggleIndex) {
+        analogSliderValues[i] = applySafeJiggle(analogRead(analogInputs[i]));
+      } else {
+        analogSliderValues[i] = analogRead(analogInputs[i]);
+      }
     }
   }
+  sliderJiggleAmount *= -1;  // Toggle after processing all sliders
 }
 
 void sendSliderValues() {
@@ -68,4 +79,9 @@ int outputMap[] = {0, 51, 102, 133, 153, 205, 307, 409, 512, 614, 716, 818, 921,
 int logarithmicToLinearValue(int logarithmicValue) {
   int linearValue = multiMap<int>(logarithmicValue, inputMap, outputMap, 14);
   return linearValue;
+}
+
+int applySafeJiggle(int rawValue, int jiggleAmount) {
+  int jiggledValue = rawValue + jiggleAmount;
+  return constrain(jiggledValue, 0, 1023);
 }
