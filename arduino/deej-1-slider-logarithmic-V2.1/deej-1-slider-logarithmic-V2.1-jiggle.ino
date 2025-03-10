@@ -31,13 +31,13 @@ void updateSliderValues() {
   for (int i = 0; i < NUM_SLIDERS; i++) {
     if(POTENTIOMETER_TYPE == LOGARITHMIC) {
       if(i == sliderJiggleIndex) {
-        analogSliderValues[i] = applySafeJiggle(logarithmicToLinearValue(analogRead(analogInputs[i])));
+        analogSliderValues[i] = applySafeJiggle(logarithmicToLinearValue(analogRead(analogInputs[i])), sliderJiggleAmount);
       } else {
         analogSliderValues[i] = logarithmicToLinearValue(analogRead(analogInputs[i]));
       }
     } else {
       if(i == sliderJiggleIndex) {
-        analogSliderValues[i] = applySafeJiggle(analogRead(analogInputs[i]));
+        analogSliderValues[i] = applySafeJiggle(analogRead(analogInputs[i]), sliderJiggleAmount);
       } else {
         analogSliderValues[i] = analogRead(analogInputs[i]);
       }
